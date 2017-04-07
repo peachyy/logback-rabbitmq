@@ -12,13 +12,14 @@ import com.peachyy.logback.queue.QueueHold;
  */
 public class RabbitMQAppender extends RabbitMQBase<LoggingEvent> {
 
-    public static final String LOGBACK_MQ_QUEUE = "logback_mq_queue";
+    public static final String LOGBACK_MQ_QUEUE = "logback_rabbitmq_queue";
 
     @Override
     protected void append(LoggingEvent eventObject) {
         byte[] b = encoder.doEncode(eventObject);
         // System.out.println(new String(b));
-        new QueueHold().sendQueue(rabbitMqFactory, LOGBACK_MQ_QUEUE, b);
+        QueueHold.getInstance().sendQueue(rabbitMqFactory, LOGBACK_MQ_QUEUE, b);
+        QueueHold.getInstance().close();
     }
 
 

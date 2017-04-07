@@ -1,0 +1,26 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-15d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}[%file:%line] - %msg%n %ex{2}
+            </pattern>
+        </encoder>
+    </appender>
+    <appender name="AAA" class="com.peachyy.logback.RabbitMQAppender">
+        <encoder class="com.peachyy.logback.encoder.RabbitMQencoder">
+            <pattern>%-15d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}[%file:%line] - %msg%n %ex{2}
+            </pattern>
+            <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
+            <!--<pattern>%-15d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}[%file:%line] - %msg%n %ex{2}</pattern>-->
+            <!--</layout>-->
+        </encoder>
+
+        <spring>false</spring>
+    </appender>
+    <logger name="application" level="DEBUG"/>
+    <logger name="com.peachyy.logback" level="debug"/>
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="AAA"/>
+    </root>
+
+</configuration>
