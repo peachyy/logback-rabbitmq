@@ -14,7 +14,6 @@
             <!--</layout>-->
         </encoder>
 
-        <spring>false</spring>
     </appender>
     <logger name="application" level="DEBUG"/>
     <logger name="com.peachyy.logback" level="debug"/>

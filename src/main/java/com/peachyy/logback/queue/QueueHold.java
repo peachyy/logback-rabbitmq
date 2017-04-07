@@ -79,7 +79,8 @@ public class QueueHold {
             channel.queueDeclare(queueName, false, false, false, null);
             channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, msg);
         } catch (IOException e) {
-            e.printStackTrace();
+            close();
+            throw new RuntimeException(String.format("发送日志队列%s失败", queueName));
         } finally {
 
         }

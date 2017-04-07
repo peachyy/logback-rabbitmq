@@ -20,6 +20,7 @@ import java.lang.management.ManagementFactory;
  */
 public abstract class RabbitMQBase<T> extends UnsynchronizedAppenderBase<T> {
     public static final String THREAD_POLL_NAME = "RabbitMQAppender";
+    public static final String LOGBACK_MQ_QUEUE = "logback_rabbitmq_queue";
     protected RabbitMQencoder encoder = null;
 
     protected String host = "localhost";
@@ -29,6 +30,7 @@ public abstract class RabbitMQBase<T> extends UnsynchronizedAppenderBase<T> {
     protected String virtual = "/";
     protected boolean spring = false;//是否是spring环境
     protected boolean registerMbean = true;
+    protected String queue = LOGBACK_MQ_QUEUE;
     RabbitMqFactory rabbitMqFactory = null;
 
     public RabbitMQBase() {
@@ -110,4 +112,13 @@ public abstract class RabbitMQBase<T> extends UnsynchronizedAppenderBase<T> {
         }
     }
 
+    public String getQueue() {
+        return queue;
+    }
+
+    public void setQueue(String queue) {
+        if (queue != null && !queue.trim().equals("")) {
+            this.queue = queue;
+        }
+    }
 }
