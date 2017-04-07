@@ -5,7 +5,7 @@
 
     <groupId>com.peachyy</groupId>
     <artifactId>logback-rabbitmq-appender</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>Logback-rabbitmq-appender</name>
     <description>Logback appender Rabbitmq</description>
     <url>https://github.com/peachyy/logback-rabbitmq.git</url>
