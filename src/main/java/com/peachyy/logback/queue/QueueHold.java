@@ -1,5 +1,6 @@
 package com.peachyy.logback.queue;
 
+import ch.qos.logback.core.spi.ContextAwareBase;
 import com.peachyy.logback.factory.RabbitMqFactory;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeoutException;
  * @since 2.0
  * <p>Created by Tao xs on 2017/4/6.</p>
  */
-public class QueueHold {
+public class QueueHold extends ContextAwareBase {
     private Connection connection = null;
     private Channel channel = null;
 
@@ -36,21 +37,25 @@ public class QueueHold {
     private void checkCollection(RabbitMqFactory factory) {
         if (connection == null) {
             try {
-                connection = factory.newConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
+                synchronized (this) {
+                    if (connection == null)
+                        connection = factory.newConnection();
+                }
+
+            } catch (Exception e) {
+                addError("创建 connection失败1[" + e.getMessage() + "]", e);
             }
         } else if (!connection.isOpen()) {
             try {
                 // connection.close();
                 connection = null;
-                connection = factory.newConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
+                synchronized (this) {
+                    if (connection == null)
+                        connection = factory.newConnection();
+                }
+
+            } catch (Exception e) {
+                addError("创建 connection失败2[" + e.getMessage() + "]", e);
             }
         }
     }
@@ -58,38 +63,52 @@ public class QueueHold {
     private void checkChannel(RabbitMqFactory factory) {
         if (channel == null) {
             try {
-                channel = connection.createChannel();
+                synchronized (this) {
+                    if (channel == null)
+                        channel = connection.createChannel();
+                }
+
             } catch (IOException e) {
-                e.printStackTrace();
+                addError("创建 channel失败1 [" + e.getMessage() + "]", e);
             }
         } else if (!channel.isOpen()) {
             try {
                 //  channel.close();
                 channel = null;
-                channel = connection.createChannel();
+                synchronized (this) {
+                    if (channel == null)
+                        channel = connection.createChannel();
+                }
+
             } catch (IOException e) {
-                e.printStackTrace();
+                addError("创建 channel失败2 [" + e.getMessage() + "]", e);
             }
         }
     }
     public void sendQueue(RabbitMqFactory factory, String queueName, byte[] msg) {
         try {
-            checkCollection(factory);
-            checkChannel(factory);
+            try {
+                connection = factory.newConnection();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            }
+            //checkCollection(factory);
+            // checkChannel(factory);
+            channel = connection.createChannel();
             channel.queueDeclare(queueName, false, false, false, null);
             channel.basicPublish("", queueName, MessageProperties.PERSISTENT_TEXT_PLAIN, msg);
         } catch (IOException e) {
-            close();
             throw new RuntimeException(String.format("发送日志队列%s失败", queueName));
         } finally {
-
+            close();
         }
     }
 
     public void close() {
         if (channel != null) {
             try {
-                channel.close();
+                if (channel.isOpen())
+                    channel.close();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (TimeoutException e) {
@@ -98,10 +117,13 @@ public class QueueHold {
         }
         if (connection != null) {
             try {
-                connection.close();
+                if (connection.isOpen())
+                    connection.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+        channel = null;
+        connection = null;
     }
 }
