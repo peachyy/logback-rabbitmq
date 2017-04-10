@@ -19,7 +19,7 @@ public class RabbitMQAppender extends RabbitMQBase<LoggingEvent> {
         byte[] b = encoder.doEncode(eventObject);
         // System.out.println(new String(b));
         QueueHold.getInstance().setContext(context);
-        QueueHold.getInstance().sendQueue(rabbitMqFactory, getQueue(), b);
+        QueueHold.getInstance().sendQueue(getQueue(), b);
         // QueueHold.getInstance().close();
     }
 

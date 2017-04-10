@@ -2,10 +2,9 @@ package com.peachyy.logback;
 
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 import com.peachyy.logback.encoder.RabbitMQencoder;
-import com.peachyy.logback.factory.RabbitMqFactory;
 import com.peachyy.logback.jmx.DefaultLogbackRabbit;
 import com.peachyy.logback.queue.QueueHold;
-import com.peachyy.logback.utils.NamedThreadFactory;
+import com.peachyy.logback.utils.RabitInfos;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -31,7 +30,7 @@ public abstract class RabbitMQBase<T> extends UnsynchronizedAppenderBase<T> {
     protected boolean spring = false;//是否是spring环境
     protected boolean registerMbean = true;
     protected String queue = LOGBACK_MQ_QUEUE;
-    RabbitMqFactory rabbitMqFactory = null;
+
 
     public RabbitMQBase() {
 
@@ -40,7 +39,14 @@ public abstract class RabbitMQBase<T> extends UnsynchronizedAppenderBase<T> {
     @Override
     public void start() {
         super.start();
-        createRabbitMqFactory();
+        RabitInfos infos = new RabitInfos();
+        infos.setHost(host);
+        infos.setVirtual(virtual);
+        infos.setUsername(username);
+        infos.setPassword(password);
+        infos.setPort(port);
+        QueueHold.getInstance().setInfos(infos);
+        QueueHold.getInstance().init();
         if (registerMbean) {
             registerJmx();
         }
@@ -49,22 +55,9 @@ public abstract class RabbitMQBase<T> extends UnsynchronizedAppenderBase<T> {
     @Override
     public void stop() {
         super.stop();
-        QueueHold.getInstance().close();
+        //RabbitMqFactory.getInstace(host,port,username,password,virtual);
     }
 
-    public RabbitMqFactory createRabbitMqFactory() {
-        if (rabbitMqFactory == null) {
-            synchronized (this) {
-                if (rabbitMqFactory == null) {
-                    rabbitMqFactory = new RabbitMqFactory(
-                            host, port, username, password, virtual
-                    );
-                    rabbitMqFactory.setThreadFactory(new NamedThreadFactory(THREAD_POLL_NAME, true));
-                }
-            }
-        }
-        return rabbitMqFactory;
-    }
 
     public void setEncoder(RabbitMQencoder encoder) {
         this.encoder = encoder;

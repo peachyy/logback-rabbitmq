@@ -9,9 +9,6 @@
         <encoder class="com.peachyy.logback.encoder.RabbitMQencoder">
             <pattern>%-15d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}[%file:%line] - %msg%n %ex{2}
             </pattern>
-            <!--<layout class="ch.qos.logback.classic.PatternLayout">-->
-            <!--<pattern>%-15d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}[%file:%line] - %msg%n %ex{2}</pattern>-->
-            <!--</layout>-->
         </encoder>
 
     </appender>
