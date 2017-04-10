@@ -25,7 +25,6 @@ public class NamedThreadFactory implements ThreadFactory {
     public Thread newThread(Runnable r) {
         Thread t = this.threadFactory.newThread(r);
         t.setDaemon(daemonThread);
-        System.out.println("===================" + this.counter.get());
         t.setName(this.prefix + "-Thread-" + this.counter.incrementAndGet());
         return t;
     }
