@@ -43,10 +43,10 @@ public class Test1 {
                 }
             }).start();
         }
-        try {
-            Thread.sleep(111111111);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(111111111);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
     }
 }
